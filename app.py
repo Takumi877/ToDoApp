@@ -1,17 +1,13 @@
-from datetime import datetime
-from datetime import date
+from datetime import datetime, date
 
-from flask import Flask
-from flask import render_template
-from flask import request
-from flask import redirect
-from flask import url_for
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
 db = SQLAlchemy(app)
 
+# データベース
 class Post(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(30), nullable=False)
@@ -38,15 +34,18 @@ def index():
 
 		return redirect('/')
 
+# 新規作成ページ
 @app.route('/create')
 def create():
 	return render_template('create.html')
 
+# 詳細ページ
 @app.route('/detail/<int:id>', methods=['GET', 'POST'])
 def read(id):
 	post = Post.query.get(id)
 	return render_template('detail.html', post=post)
 
+# 更新ページ
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
 	post = Post.query.get(id)
@@ -60,6 +59,7 @@ def update(id):
 		db.session.commit()
 		return redirect('/')
 
+# 削除機能
 @app.route('/delete/<int:id>')
 def delete(id):
 	post = Post.query.get(id)
